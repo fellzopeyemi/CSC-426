@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSC426 Practical</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Courier New", monospace; display: flex; min-height: 100vh; background: #fff; color: #111; }
+  .sidebar { width: 180px; background: #111; color: #fff; flex-shrink: 0; padding: 24px 0; }
+  .sidebar .logo { font-size: 13px; font-weight: bold; padding: 0 18px 20px; border-bottom: 1px solid #333; letter-spacing: 1px; }
+  .sidebar .logo span { display: block; font-size: 10px; color: #777; margin-top: 3px; font-weight: normal; letter-spacing: 0; }
+  .sidebar a { display: block; padding: 12px 18px; font-size: 13px; color: #999; text-decoration: none; border-left: 3px solid transparent; }
+  .sidebar a:hover { color: #fff; background: #1a1a1a; }
+  .sidebar a.on { color: #fff; border-left-color: #fff; background: #1e1e1e; }
+  .content { flex: 1; padding: 36px; }
+  .pane { display: none; max-width: 360px; }
+  .pane.show { display: block; }
+  .pane h2 { font-size: 16px; margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase; }
+  .scr { border: 2px solid #111; text-align: right; padding: 10px 12px; font-size: 26px; min-height: 52px; background: #fafafa; margin-bottom: 10px; word-break: break-all; }
+  .kg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+  .k { padding: 12px; font-size: 15px; border: 1px solid #bbb; background: #fff; cursor: pointer; font-family: "Courier New", monospace; text-align: center; }
+  .k:hover { background: #f0f0f0; }
+  .k.op { background: #efefef; }
+  .k.cl { background: #ddd; }
+  .k.eq { background: #111; color: #fff; grid-column: span 2; }
+  .k.eq:hover { background: #333; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+  .field input { width: 100%; padding: 9px 10px; border: 1px solid #bbb; font-family: "Courier New", monospace; font-size: 13px; }
+  .field input:focus { outline: 2px solid #111; border-color: transparent; }
+  .ferr { font-size: 11px; color: red; display: none; margin-top: 3px; }
+  .ferr.on { display: block; }
+  .brow { display: flex; gap: 8px; margin-top: 16px; }
+  .brow button { flex: 1; padding: 10px; font-family: "Courier New", monospace; font-size: 13px; border: 1px solid #333; cursor: pointer; }
+  .brow .go { background: #111; color: #fff; }
+  .brow .go:hover { background: #333; }
+  .brow .no { background: #fff; }
+  .brow .no:hover { background: #f5f5f5; }
+  .msg { margin-top: 14px; padding: 10px; font-size: 13px; border: 1px solid #bbb; display: none; }
+  .msg.good { background: #f9f9f9; }
+  .msg.bad { color: darkred; background: #fff6f6; }
+  @media (max-width: 520px) {
+    body { flex-direction: column; }
+    .sidebar { width: 100%; padding: 12px 0; display: flex; align-items: center; gap: 0; }
+    .sidebar .logo { border-bottom: none; padding-right: 20px; border-right: 1px solid #333; }
+    .sidebar a { padding: 10px 16px; border-left: none; border-bottom: 3px solid transparent; }
+    .sidebar a.on { border-bottom-color: #fff; border-left: none; }
+    .content { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="logo">CSC426 <span>Practical Work</span></div>
+  <a class="on" href="#" onclick="sw('calc'); return false;">Calculator</a>
+  <a href="#" onclick="sw('login'); return false;">Login App</a>
+</div>
+<div class="content">
+
+  <div class="pane show" id="pane-calc">
+    <h2>Calculator</h2>
+    <div class="scr" id="d9">0</div>
+    <div class="kg">
+      <button class="k cl" onclick="c9()">C</button>
+      <button class="k op" onclick="o9('^')">^</button>
+      <button class="k op" onclick="o9('%')">%</button>
+      <button class="k op" onclick="o9('/')">/</button>
+      <button class="k" onclick="n9('7')">7</button>
+      <button class="k" onclick="n9('8')">8</button>
+      <button class="k" onclick="n9('9')">9</button>
+      <button class="k op" onclick="o9('*')">*</button>
+      <button class="k" onclick="n9('4')">4</button>
+      <button class="k" onclick="n9('5')">5</button>
+      <button class="k" onclick="n9('6')">6</button>
+      <button class="k op" onclick="o9('-')">-</button>
+      <button class="k" onclick="n9('1')">1</button>
+      <button class="k" onclick="n9('2')">2</button>
+      <button class="k" onclick="n9('3')">3</button>
+      <button class="k op" onclick="o9('+')">+</button>
+      <button class="k" onclick="n9('0')">0</button>
+      <button class="k" onclick="n9('.')">.</button>
+      <button class="k eq" onclick="e9()">=</button>
+    </div>
+  </div>
+
+  <div class="pane" id="pane-login">
+    <h2>Login</h2>
+    <div class="field">
+      <label>Username</label>
+      <input type="text" id="u9" autocomplete="off" placeholder="username">
+      <div class="ferr" id="ue9">Username is required.</div>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="p9" placeholder="password">
+      <div class="ferr" id="pe9">Min. 6 characters required.</div>
+    </div>
+    <div class="brow">
+      <button class="go" onclick="lg9()">Login</button>
+      <button class="no" onclick="rs9()">Reset</button>
+    </div>
+    <div class="msg" id="m9"></div>
+  </div>
+
+</div>
+<script>
+  function sw(which) {
+    document.querySelectorAll('.pane').forEach(function(p) { p.classList.remove('show'); });
+    document.querySelectorAll('.sidebar a').forEach(function(a) { a.classList.remove('on'); });
+    document.getElementById('pane-' + which).classList.add('show');
+    var links = document.querySelectorAll('.sidebar a');
+    links[which === 'calc' ? 0 : 1].classList.add('on');
+  }
+
+  var e9x = '', jc9 = false;
+  function sd9(v) { document.getElementById('d9').textContent = v || '0'; }
+  function n9(d) { if (jc9) { e9x=''; jc9=false; } if (d==='.'&&e9x.split(/[+\-*/%^]/).pop().includes('.')) return; e9x+=d; sd9(e9x); }
+  function o9(op) { jc9=false; if (!e9x&&op!=='-') return; if (e9x&&'+-*/%^'.includes(e9x.slice(-1))) e9x=e9x.slice(0,-1); e9x+=op; sd9(e9x); }
+  function c9() { e9x=''; jc9=false; sd9('0'); }
+  function e9() {
+    if (!e9x) return;
+    try {
+      var r=Function('"use strict";return('+e9x.replace(/\^/g,'**')+')')(  );
+      if (!isFinite(r)) { sd9('Error'); e9x=''; return; }
+      r=parseFloat(r.toFixed(10)); e9x=String(r); sd9(e9x); jc9=true;
+    } catch(err) { sd9('Error'); e9x=''; }
+  }
+
+  function lg9() {
+    var u=document.getElementById('u9').value.trim(), p=document.getElementById('p9').value;
+    var ue=document.getElementById('ue9'), pe=document.getElementById('pe9'), m=document.getElementById('m9');
+    ue.className='ferr'; pe.className='ferr'; m.style.display='none';
+    var ok=true;
+    if (!u) { ue.className='ferr on'; ok=false; }
+    if (p.length<6) { pe.className='ferr on'; ok=false; }
+    if (!ok) return;
+    m.style.display='block';
+    if (u==='admin'&&p==='admin123') { m.className='msg good'; m.textContent='Access granted. Welcome, '+u+'.'; }
+    else { m.className='msg bad'; m.textContent='Login failed. Invalid credentials.'; }
+  }
+
+  function rs9() {
+    document.getElementById('u9').value=''; document.getElementById('p9').value='';
+    document.getElementById('ue9').className='ferr'; document.getElementById('pe9').className='ferr';
+    var m=document.getElementById('m9'); m.style.display='none'; m.className='msg';
+  }
+</script>
+</body>
+</html>
